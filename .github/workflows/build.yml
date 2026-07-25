@@ -666,7 +666,7 @@ jobs:
             fi
           fi
 
-          patch -p1 < "$SUSFS_PATCH" || true
+          patch -p1 < "$SUSFS_PATCH"
 
           # 主补丁应用后还原临时上下文，避免无关源码差异保留到最终产物
           if [[ "${{ inputs.android_version }}" == "android12" && "${{ inputs.kernel_version }}" == "5.10" ]]; then
