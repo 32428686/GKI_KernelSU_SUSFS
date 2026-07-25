@@ -668,11 +668,14 @@ jobs:
           fi
 
           # 修复 susfs4ksu AVC Log Spoofing 缺失的变量定义
-          # avc.c 补丁引用了 susfs_ksu_sid 和 susfs_priv_app_sid，但 susfs.c 没有定义
-          if ! grep -q "u32 susfs_ksu_sid" ./fs/susfs.c; then
-            sed -i '/^DEFINE_STATIC_KEY_FALSE(susfs_is_avc_log_spoofing_enabled);/i\u32 susfs_ksu_sid = 0;\nu32 susfs_priv_app_sid = 0;' ./fs/susfs.c
-            echo "已添加缺失的 susfs_ksu_sid 和 susfs_priv_app_sid 定义"
-          fi
+          # 清理之前可能残留的错误内容
+          sed -i '/\/\* Fix: Define missing SID variables for AVC log spoofing \*\//d' ./fs/susfs.c
+          sed -i '/^#include <linux\\/security.h>$/d' ./fs/susfs.c
+          sed -i '/^u32 susfs_ksu_sid = 0;$/d' ./fs/susfs.c
+          sed -i '/^u32 susfs_priv_app_sid = 0;$/d' ./fs/susfs.c
+          # 添加正确的变量定义
+          sed -i '/^DEFINE_STATIC_KEY_FALSE(susfs_is_avc_log_spoofing_enabled);/a\u32 susfs_ksu_sid = 0;\nu32 susfs_priv_app_sid = 0;' ./fs/susfs.c
+          echo "已添加缺失的 susfs_ksu_sid 和 susfs_priv_app_sid 定义"
 
           patch -p1 < "$SUSFS_PATCH"
 
