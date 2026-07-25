@@ -667,14 +667,7 @@ jobs:
             fi
           fi
 
-          # 修复 susfs4ksu AVC Log Spoofing 缺失的变量定义
-          # avc.c 补丁引用了 susfs_ksu_sid 和 susfs_priv_app_sid，但 susfs.c 没有定义
-          # 重新复制干净的 susfs.c，然后追加变量定义
-          cp $SUSFS4KSU/kernel_patches/fs/susfs.c ./fs/susfs.c
-          echo '' >> ./fs/susfs.c
-          echo 'u32 susfs_ksu_sid = 0;' >> ./fs/susfs.c
-          echo 'u32 susfs_priv_app_sid = 0;' >> ./fs/susfs.c
-          echo '已添加缺失的 susfs_ksu_sid 和 susfs_priv_app_sid 定义'
+          # SukiSU 已经定义了 susfs_ksu_sid 和 susfs_priv_app_sid，不需要额外添加
 
           patch -p1 < "$SUSFS_PATCH"
 
